@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@import "tailwindcss";
+
+@theme {
+  /* Backgrounds */
+  --color-bg-primary: #0E1116;
+  --color-bg-secondary: #141922;
+  --color-bg-tertiary: #1B2230;
+  --color-bg-hover: #1F2635;
+  --color-bg-active: #27304A;
+
+  /* Text */
+  --color-text-primary: #E6E8EB;
+  --color-text-secondary: #B3B8C4;
+  --color-text-muted: #7A8191;
+
+  /* Accents */
+  --color-accent-blue: #3A6DF0;
+  --color-accent-teal: #2EC4B6;
+  --color-accent-purple: #8B5CF6;
+  --color-accent-red: #E5535D;
+  --color-accent-gold: #F4B860;
+
+  /* Soft Accents */
+  --color-accent-soft-blue: #5C85F6;
+  --color-accent-soft-teal: #5AD9CC;
+  --color-accent-soft-purple: #A78BFA;
+  --color-accent-soft-red: #F07A82;
+  --color-accent-soft-gold: #FFD08A;
+
+  /* Borders */
+  --color-border-primary: #232A3A;
+  --color-border-secondary: #2D3548;
+  --color-border-subtle: #1C2230;
+  --color-border-focus: #3A6DF0;
+  --color-border-error: #E5535D;
+  --color-border-success: #2EC4B6;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Shadows */
+  --shadow-soft: 0 4px 20px rgba(0,0,0,0.45);
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.5);
+  --shadow-focus: 0 0 0 2px rgba(58,109,240,0.5);
+}
