@@ -1,22 +1,23 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer } from 'electron'
 
-// Custom APIs for renderer
-const api = {}
-
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
+// Define the API implementation
+const api = {
+  fonts: {
+    list: (): Promise<any[]> => ipcRenderer.invoke('fonts:list'),
+    inject: (fontFamily: string): Promise<boolean> => ipcRenderer.invoke('fonts:inject', fontFamily)
+  },
+  storage: {
+    get: (key: string): Promise<any> => ipcRenderer.invoke('storage:get', key),
+    set: (key: string, value: any): Promise<void> =>
+      ipcRenderer.invoke('storage:set', { key, value }),
+    updateBookmark: (bookmark: any): Promise<any> =>
+      ipcRenderer.invoke('storage:updateBookmark', bookmark),
+    removeBookmark: (bookmarkId: string): Promise<boolean> =>
+      ipcRenderer.invoke('storage:removeBookmark', bookmarkId),
+    addFontPair: (pair: any): Promise<any> => ipcRenderer.invoke('storage:addFontPair', pair),
+    removeFontPair: (pairId: string): Promise<boolean> =>
+      ipcRenderer.invoke('storage:removeFontPair', pairId)
   }
-} else {
-  // @ts-ignore (define in dts)
-  window.electron = electronAPI
-  // @ts-ignore (define in dts)
-  window.api = api
 }
+
+contextBridge.exposeInMainWorld('api', api)

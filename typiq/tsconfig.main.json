@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "out/main",
+    "noEmit": false,
+    "module": "ESNext",
+    "moduleResolution": "node"
+  },
+  "include": ["src/main/**/*"]
+}
