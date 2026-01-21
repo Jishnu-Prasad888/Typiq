@@ -184,21 +184,23 @@ const FontExplorer: React.FC = () => {
     )
   }
 
-  if (isLoading && fonts.length === 0) {
+  if (!isLoading && fonts.length === 0) {
     return (
       <div className="flex items-center justify-center h-full bg-bg-primary">
-        <div className="text-center">
-          {/* Spinner */}
-          <div className="relative w-14 h-14 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-border-primary animate-spin-slow border-t-accent-blue"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-accent-blue animate-spin border-t-accent-white"></div>
+        <div className="text-center p-8 max-w-md">
+          <div className="w-16 h-16 rounded-full bg-bg-tertiary flex items-center justify-center mb-6 mx-auto">
+            <span className="text-3xl text-text-muted">⚠️</span>
           </div>
-
-          {/* Loading text with pulsing dots */}
-          <p className="text-text-secondary text-sm">
-            Loading system fonts
-            <span className="animate-pulse">...</span>
+          <h2 className="text-xl font-bold text-text-primary mb-3">No Fonts Available</h2>
+          <p className="text-text-secondary mb-6">
+            Unable to load system fonts. This may be due to permission issues or system constraints.
           </p>
+          <button
+            onClick={() => loadFonts(true)}
+            className="px-6 py-3 rounded-full bg-accent-orange text-white font-semibold hover:bg-accent-gold transition-all duration-200"
+          >
+            Retry Loading Fonts
+          </button>
         </div>
       </div>
     )

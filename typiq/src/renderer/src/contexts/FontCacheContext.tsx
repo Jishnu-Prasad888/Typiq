@@ -23,7 +23,7 @@ export const useFontCache = () => {
 
 export const FontCacheProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [fonts, setFonts] = useState<FontInfo[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const cacheRef = useRef<{ fonts: FontInfo[]; timestamp: number } | null>(null)
   const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes cache
@@ -40,6 +40,12 @@ export const FontCacheProvider: React.FC<{ children: ReactNode }> = ({ children 
     try {
       setIsLoading(true)
       setError(null)
+
+      // Check if window.api exists (important for build)
+      if (!window.api?.fonts?.list) {
+        throw new Error('Font API is not available')
+      }
+
       const fontList = await window.api.fonts.list()
 
       // Update cache
@@ -52,10 +58,12 @@ export const FontCacheProvider: React.FC<{ children: ReactNode }> = ({ children 
       setIsLoading(false)
       return fontList
     } catch (err) {
-      const errorMsg = 'Failed to load fonts'
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load fonts'
       setError(errorMsg)
       setIsLoading(false)
-      console.error(err)
+      console.error('Error loading fonts:', err)
+
+      // Return empty array if loading fails
       return []
     }
   }
@@ -69,9 +77,21 @@ export const FontCacheProvider: React.FC<{ children: ReactNode }> = ({ children 
     return cacheRef.current?.fonts || []
   }
 
-  // Load fonts on mount (only once)
+  // Load fonts on mount with error handling
   useEffect(() => {
-    loadFonts()
+    const initFonts = async () => {
+      try {
+        // Add a small delay to ensure window.api is available
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await loadFonts()
+      } catch (err) {
+        console.error('Failed to initialize fonts:', err)
+        // Don't set error state here to prevent breaking the UI
+        // Just log and continue with empty fonts
+      }
+    }
+
+    initFonts()
   }, [])
 
   return (
