@@ -1,7 +1,8 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontIcon, CompareIcon, BookmarkIcon, SettingsIcon } from './Icons'
-
+import { ShipWheel } from 'lucide-react'
+import logo from '../../public/icon.png'
 const Sidebar: React.FC = () => {
   const navItems = [
     { path: '/explorer', icon: FontIcon, label: 'Explorer' },
@@ -13,9 +14,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside className="w-16 border-r border-border-primary bg-bg-secondary flex flex-col items-center py-4">
       <div className="mb-8">
-        <div className="w-10 h-10 rounded-lg bg-linear-to-br from-accent-blue to-accent-purple flex items-center justify-center">
-          <span className="text-lg font-bold text-white">T</span>
-        </div>
+        <img src={logo} alt="icon" className="h-10 w-10" />
       </div>
 
       <nav className="flex-1 flex flex-col space-y-4">
@@ -39,7 +38,7 @@ const Sidebar: React.FC = () => {
       </nav>
 
       <div className="mt-auto">
-        <div className="w-8 h-8 rounded-full bg-linear-to-br from-accent-teal to-accent-gold"></div>
+        <ShipWheel size={30} color="#3d2c1d" />
       </div>
     </aside>
   )

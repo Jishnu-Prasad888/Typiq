@@ -1,58 +1,42 @@
-import { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss'
 
-export default {
-  content: ['./src/renderer/src/**/*.{tsx,ts,jsx,js}', './src/renderer/index.html'],
-  darkMode: 'class',
+const config: Config = {
+  content: ['./src/**/*.{ts,tsx,js,jsx,html}', './index.html'],
   theme: {
     extend: {
       colors: {
-        bg: {
-          primary: '#0E1116',
-          secondary: '#141922',
-          tertiary: '#1B2230',
-          hover: '#1F2635',
-          active: '#27304A'
-        },
         text: {
-          primary: '#E6E8EB',
-          secondary: '#B3B8C4',
-          muted: '#7A8191'
+          primary: '#E1D0B3',
+          secondary: '#E1D0B3',
+          muted: '#9a8f86',
+          inverse: '#ffffff'
         },
-        accent: {
-          blue: '#3A6DF0',
-          teal: '#2EC4B6',
-          purple: '#8B5CF6',
-          red: '#E5535D',
-          gold: '#F4B860'
-        },
-        'accent-soft': {
-          blue: '#5C85F6',
-          teal: '#5AD9CC',
-          purple: '#A78BFA',
-          red: '#F07A82',
-          gold: '#FFD08A'
+        bg: {
+          primary: '#1c1917',
+          secondary: '#24201d',
+          tertiary: '#2f2a26',
+          hover: '#3a332e',
+          active: '#3a332e'
         },
         border: {
-          primary: '#232A3A',
-          secondary: '#2D3548',
-          subtle: '#1C2230',
-          focus: '#3A6DF0',
-          error: '#E5535D',
-          success: '#2EC4B6'
+          primary: '#3f3832',
+          subtle: '#2a231c'
+        },
+        accent: {
+          green: '#4caf50',
+          red: '#7b1e1e',
+          orange: '#e67e22',
+          brown: '#2a231c',
+          gold: '#f4d06f',
+          white: '#ffffff',
+          blue: '#3b82f6',
+          purple: '#8b5cf6',
+          teal: '#0d9488'
         }
-      },
-      boxShadow: {
-        soft: '0 4px 20px rgba(0,0,0,0.45)',
-        card: '0 10px 30px rgba(0,0,0,0.5)',
-        focus: '0 0 0 2px rgba(58,109,240,0.5)'
-      },
-      borderRadius: {
-        sm: '6px',
-        md: '10px',
-        lg: '14px',
-        xl: '18px'
       }
     }
   },
   plugins: []
-} satisfies Config
+}
+
+export default config

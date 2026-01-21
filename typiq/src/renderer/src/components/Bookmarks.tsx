@@ -174,34 +174,11 @@ const Bookmarks: React.FC = () => {
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
             <input
               type="text"
-              placeholder="Search bookmarks..."
+              placeholder="Search fonts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input pl-10 w-64"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-border-subtle bg-bg-primary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
             />
-          </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <TagIcon className="w-4 h-4 text-text-muted" />
-            <span className="text-text-secondary">Category:</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category: string) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategory === category
-                    ? 'bg-accent-teal text-white'
-                    : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
           </div>
         </div>
       </div>
@@ -231,9 +208,6 @@ const Bookmarks: React.FC = () => {
                       {bookmark.fontFamily}
                     </h3>
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs px-2 py-1 rounded bg-accent-teal/10 text-accent-teal">
-                        {bookmark.category}
-                      </span>
                       <span className="text-xs text-text-muted">
                         {new Date(bookmark.createdAt).toLocaleDateString()}
                       </span>

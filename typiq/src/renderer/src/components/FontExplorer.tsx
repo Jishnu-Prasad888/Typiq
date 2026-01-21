@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import toast from 'react-hot-toast'
-import { SearchIcon, FilterIcon, StarIcon } from './Icons'
+import { SearchIcon, FilterIcon, StarIcon, RefreshCwIcon } from './Icons'
 import FontPreview from './FontPreview'
 import { FontInfo, Bookmark } from '../types/preload'
-
+import { useFontCache } from '../hooks/useFontCache' // Add this import
+import { Search } from 'lucide-react'
 const FontExplorer: React.FC = () => {
-  const [fonts, setFonts] = useState<FontInfo[]>([])
+  const { fonts, isLoading, error, loadFonts, getCachedFonts } = useFontCache()
+
   const [filteredFonts, setFilteredFonts] = useState<FontInfo[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [isLoading, setIsLoading] = useState(true)
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [previewSettings, setPreviewSettings] = useState({
     text: 'The quick brown fox jumps over the lazy dog.',
@@ -18,9 +19,10 @@ const FontExplorer: React.FC = () => {
     fontWeight: 400,
     italic: false,
     underline: false,
-    color: '#E6E8EB',
+    color: '#2A231C',
     backgroundColor: 'transparent'
   })
+  const [refreshCount, setRefreshCount] = useState(0)
 
   // Categories from font names (auto-detected)
   const categories = useMemo(() => {
@@ -36,18 +38,14 @@ const FontExplorer: React.FC = () => {
     return Array.from(cats)
   }, [fonts])
 
-  // Load fonts and bookmarks
+  // Load bookmarks and settings
   useEffect(() => {
-    const loadData = async () => {
+    const loadUserData = async () => {
       try {
-        setIsLoading(true)
-        const [fontList, savedBookmarks, savedSettings] = await Promise.all([
-          window.api.fonts.list(),
+        const [savedBookmarks, savedSettings] = await Promise.all([
           window.api.storage.get('bookmarks'),
           window.api.storage.get('settings')
         ])
-        setFonts(fontList)
-        setFilteredFonts(fontList)
         setBookmarks(savedBookmarks)
 
         // Load saved settings
@@ -59,13 +57,10 @@ const FontExplorer: React.FC = () => {
           }))
         }
       } catch (error) {
-        toast.error('Failed to load fonts')
-        console.error(error)
-      } finally {
-        setIsLoading(false)
+        console.error('Failed to load user data:', error)
       }
     }
-    loadData()
+    loadUserData()
   }, [])
 
   // Filter fonts based on search and category
@@ -113,9 +108,14 @@ const FontExplorer: React.FC = () => {
   const rowVirtualizer = useVirtualizer({
     count: filteredFonts.length,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => 180,
-    overscan: 5
+    estimateSize: () => Math.max(200, previewSettings.fontSize * 8),
+    overscan: 3
   })
+
+  // Remeasure when preview settings change
+  useEffect(() => {
+    rowVirtualizer.measure()
+  }, [previewSettings.fontSize, previewSettings.text, rowVirtualizer])
 
   const handleBookmark = useCallback(
     async (fontFamily: string) => {
@@ -161,12 +161,44 @@ const FontExplorer: React.FC = () => {
     }
   }
 
-  if (isLoading) {
+  const handleRefreshFonts = async () => {
+    setRefreshCount((prev) => prev + 1)
+    await loadFonts(true) // Force refresh
+    toast.success('Fonts refreshed')
+  }
+
+  if (error) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-border-primary border-t-accent-blue rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-text-secondary">Loading system fonts...</p>
+          <div className="w-12 h-12 rounded-full bg-accent-red/10 flex items-center justify-center mb-4 mx-auto">
+            <span className="text-2xl text-accent-red">!</span>
+          </div>
+          <h3 className="text-lg font-bold text-text-primary mb-2">Failed to load fonts</h3>
+          <p className="text-text-secondary mb-4">{error}</p>
+          <button onClick={() => loadFonts(true)} className="btn-primary">
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (isLoading && fonts.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full bg-bg-primary">
+        <div className="text-center">
+          {/* Spinner */}
+          <div className="relative w-14 h-14 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-4 border-border-primary animate-spin-slow border-t-accent-blue"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-accent-blue animate-spin border-t-accent-white"></div>
+          </div>
+
+          {/* Loading text with pulsing dots */}
+          <p className="text-text-secondary text-sm">
+            Loading system fonts
+            <span className="animate-pulse">...</span>
+          </p>
         </div>
       </div>
     )
@@ -178,21 +210,39 @@ const FontExplorer: React.FC = () => {
       <div className="p-6 border-b border-border-primary glass-panel">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">Font Explorer</h1>
-            <p className="text-text-secondary">
-              {filteredFonts.length} of {fonts.length} fonts
-            </p>
+            <h1 className="font-betsy text-5xl text-text-primary">Typiq</h1>
+            <div className="flex items-center space-x-4 mt-1">
+              <p
+                className=" text-text-secondary text-sm leading-relaxed tracking-wide 
+              bg-bg-secondary px-3 py-1 rounded-full hover:bg-bg-hover hover:text-accent-brown my-1 inline-block"
+              >
+                {filteredFonts.length} of {fonts.length} fonts
+              </p>
+
+              <div className="text-xs px-2 py-1 rounded-full bg-bg-tertiary text-text-muted">
+                Cache: {getCachedFonts().length > 0 ? 'Ready' : 'Empty'}
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
+            <button
+              onClick={handleRefreshFonts}
+              className="btn-secondary flex items-center space-x-2"
+              disabled={isLoading}
+            >
+              <RefreshCwIcon className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
                 type="text"
                 placeholder="Search fonts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input pl-10 w-64"
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-border-subtle bg-bg-primary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
               />
             </div>
           </div>
@@ -204,23 +254,23 @@ const FontExplorer: React.FC = () => {
             <textarea
               value={previewSettings.text}
               onChange={(e) => setPreviewSettings((prev) => ({ ...prev, text: e.target.value }))}
-              className="input min-h-[60px] resize-none"
               placeholder="Enter preview text..."
+              className="w-full min-h-[60px] resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
             />
           </div>
 
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
-              <span className="text-text-secondary text-sm">Size:</span>
+              <span className="text-text-secondary text-sm text-shadow-blue-50">Size:</span>
               <input
                 type="number"
                 value={previewSettings.fontSize}
                 onChange={(e) =>
                   setPreviewSettings((prev) => ({ ...prev, fontSize: parseInt(e.target.value) }))
                 }
-                className="input w-20"
                 min="8"
                 max="144"
+                className="w-20 px-3 py-2 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
               />
             </div>
 
@@ -229,7 +279,7 @@ const FontExplorer: React.FC = () => {
               onChange={(e) =>
                 setPreviewSettings((prev) => ({ ...prev, fontWeight: parseInt(e.target.value) }))
               }
-              className="input w-32"
+              className="w-32 px-4 py-2 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
             >
               <option value="100">Thin (100)</option>
               <option value="200">Extra Light (200)</option>
@@ -242,7 +292,7 @@ const FontExplorer: React.FC = () => {
               <option value="900">Black (900)</option>
             </select>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -250,9 +300,9 @@ const FontExplorer: React.FC = () => {
                   onChange={(e) =>
                     setPreviewSettings((prev) => ({ ...prev, italic: e.target.checked }))
                   }
-                  className="w-4 h-4 rounded bg-bg-tertiary border-border-primary"
+                  className="w-5 h-5 rounded-lg border border-border-subtle bg-bg-tertiary checked:bg-accent-orange checked:border-accent-orange transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-orange"
                 />
-                <span className="text-text-secondary">Italic</span>
+                <span className="text-text-secondary select-none">Italic</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -262,13 +312,16 @@ const FontExplorer: React.FC = () => {
                   onChange={(e) =>
                     setPreviewSettings((prev) => ({ ...prev, underline: e.target.checked }))
                   }
-                  className="w-4 h-4 rounded bg-bg-tertiary border-border-primary"
+                  className="w-5 h-5 rounded-lg border border-border-subtle bg-bg-tertiary checked:bg-accent-orange checked:border-accent-orange transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-orange"
                 />
-                <span className="text-text-secondary">Underline</span>
+                <span className="text-text-secondary select-none">Underline</span>
               </label>
             </div>
 
-            <button onClick={handleSaveSettings} className="btn-primary whitespace-nowrap">
+            <button
+              onClick={handleSaveSettings}
+              className="px-5 py-2 rounded-full bg-accent-orange text-accent-white font-semibold shadow-sm hover:bg-accent-gold hover:text-text-primary active:bg-accent-red transition-all duration-200 whitespace-nowrap"
+            >
               Save Settings
             </button>
           </div>
@@ -276,88 +329,102 @@ const FontExplorer: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="px-6 py-3 border-b border-border-primary bg-bg-secondary flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <FilterIcon className="w-4 h-4 text-text-muted" />
-          <span className="text-text-secondary">Filter:</span>
-        </div>
+      <div className="px-6 py-3 border-b border-border-primary bg-bg-secondary flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <FilterIcon className="w-4 h-4 text-text-muted" />
+            <span className="text-text-secondary">Filter:</span>
+          </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-accent-blue text-white'
-                : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
-            }`}
-          >
-            All Fonts
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                selectedCategory === 'all'
+                  ? 'bg-accent-orange text-white'
+                  : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+              }`}
+            >
+              All Fonts
+            </button>
 
-          <button
-            onClick={() => setSelectedCategory('bookmarked')}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 ${
-              selectedCategory === 'bookmarked'
-                ? 'bg-accent-gold text-white'
-                : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
-            }`}
-          >
-            <StarIcon className="w-3 h-3" />
-            <span>Bookmarked</span>
-          </button>
+            <button
+              onClick={() => setSelectedCategory('bookmarked')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 ${
+                selectedCategory === 'bookmarked'
+                  ? 'bg-accent-orange text-white'
+                  : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+              }`}
+            >
+              <StarIcon className="w-3 h-3" />
+              <span>Bookmarked ({bookmarks.length})</span>
+            </button>
 
-          {categories
-            .filter((cat) => cat !== 'all')
-            .map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all capitalize ${
-                  selectedCategory === category
-                    ? 'bg-accent-blue text-white'
-                    : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+            {categories
+              .filter((cat) => cat !== 'all')
+              .map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all capitalize ${
+                    selectedCategory === category
+                      ? 'bg-accent-orange text-white'
+                      : 'bg-bg-tertiary text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+          </div>
         </div>
       </div>
 
       {/* Font Grid */}
-      <div ref={containerRef} className="flex-1 overflow-auto">
-        <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            position: 'relative'
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-            const font = filteredFonts[virtualRow.index]
-            const isBookmarked = bookmarks.some((b) => b.fontFamily === font.family)
+      <div ref={containerRef} className="flex-1 overflow-auto p-4">
+        {filteredFonts.length === 0 && !isLoading ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="w-16 h-16 rounded-full bg-bg-tertiary flex items-center justify-center mb-4">
+              <SearchIcon className="w-8 h-8 text-text-muted" />
+            </div>
+            <h3 className="text-xl font-bold text-text-primary mb-2">No fonts found</h3>
+            <p className="text-text-secondary max-w-md">
+              Try changing your search query or category filter.
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              position: 'relative'
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const font = filteredFonts[virtualRow.index]
+              const isBookmarked = bookmarks.some((b) => b.fontFamily === font.family)
 
-            return (
-              <div
-                key={font.family}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`
-                }}
-              >
-                <FontPreview
-                  font={font}
-                  previewSettings={previewSettings}
-                  isBookmarked={isBookmarked}
-                  onBookmark={handleBookmark}
-                />
-              </div>
-            )
-          })}
-        </div>
+              return (
+                <div
+                  key={`${font.family}-${refreshCount}`}
+                  ref={rowVirtualizer.measureElement} // <-- attach measurement here
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualRow.start}px)`
+                  }}
+                >
+                  <FontPreview
+                    font={font}
+                    previewSettings={previewSettings}
+                    isBookmarked={isBookmarked}
+                    onBookmark={handleBookmark}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
