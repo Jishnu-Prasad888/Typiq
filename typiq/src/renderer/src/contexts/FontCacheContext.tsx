@@ -1,8 +1,27 @@
-// Create a new file: useFontCache.tsx
-import { useState, useEffect, useRef } from 'react'
+// contexts/FontCacheContext.tsx
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react'
 import { FontInfo } from '../types/preload'
 
+interface FontCacheContextType {
+  fonts: FontInfo[]
+  isLoading: boolean
+  error: string | null
+  loadFonts: (forceRefresh?: boolean) => Promise<FontInfo[]>
+  clearCache: () => void
+  getCachedFonts: () => FontInfo[]
+}
+
+const FontCacheContext = createContext<FontCacheContextType | undefined>(undefined)
+
 export const useFontCache = () => {
+  const context = useContext(FontCacheContext)
+  if (!context) {
+    throw new Error('useFontCache must be used within FontCacheProvider')
+  }
+  return context
+}
+
+export const FontCacheProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [fonts, setFonts] = useState<FontInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -43,23 +62,30 @@ export const useFontCache = () => {
 
   const clearCache = () => {
     cacheRef.current = null
+    setFonts([])
   }
 
   const getCachedFonts = () => {
     return cacheRef.current?.fonts || []
   }
 
-  // Preload on mount
+  // Load fonts on mount (only once)
   useEffect(() => {
     loadFonts()
   }, [])
 
-  return {
-    fonts,
-    isLoading,
-    error,
-    loadFonts,
-    clearCache,
-    getCachedFonts
-  }
+  return (
+    <FontCacheContext.Provider
+      value={{
+        fonts,
+        isLoading,
+        error,
+        loadFonts,
+        clearCache,
+        getCachedFonts
+      }}
+    >
+      {children}
+    </FontCacheContext.Provider>
+  )
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontIcon, CompareIcon, BookmarkIcon, SettingsIcon } from './Icons'
 import { ShipWheel } from 'lucide-react'
-import logo from '../../public/icon.png'
+import logo from '../../src/icon.png'
 const Sidebar: React.FC = () => {
   const navItems = [
     { path: '/explorer', icon: FontIcon, label: 'Explorer' },

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { SearchIcon, ShuffleIcon, SaveIcon, ChevronDownIcon } from './Icons'
 import { FontInfo, FontPair } from '../types/preload'
-import { useFontCache } from '../hooks/useFontCache'
+import { useFontCache } from '../contexts/FontCacheContext'
 
 interface ComparisonFont {
   id: string
@@ -16,6 +16,7 @@ interface ComparisonFont {
 }
 
 const FontComparator: React.FC = () => {
+  // This now uses the context hook
   const { fonts, isLoading, loadFonts } = useFontCache()
   const [comparisonFonts, setComparisonFonts] = useState<ComparisonFont[]>([
     {

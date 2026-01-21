@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { store, StoreSchema } from './store.js'
@@ -14,6 +14,7 @@ const createWindow = () => {
     minWidth: 800,
     minHeight: 600,
     titleBarStyle: 'hiddenInset',
+    icon: path.join(__dirname, '../assets/icon.png'),
     trafficLightPosition: { x: 16, y: 16 },
     backgroundColor: '#0E1116',
     show: false,
@@ -49,6 +50,7 @@ app.whenReady().then(() => {
       createWindow()
     }
   })
+  Menu.setApplicationMenu(null)
 })
 
 app.on('window-all-closed', () => {

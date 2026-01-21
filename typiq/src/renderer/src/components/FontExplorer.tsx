@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { SearchIcon, FilterIcon, StarIcon, RefreshCwIcon } from './Icons'
 import FontPreview from './FontPreview'
 import { FontInfo, Bookmark } from '../types/preload'
-import { useFontCache } from '../hooks/useFontCache' // Add this import
+import { useFontCache } from '../contexts/FontCacheContext' // Add this import
 import { Search } from 'lucide-react'
 const FontExplorer: React.FC = () => {
   const { fonts, isLoading, error, loadFonts, getCachedFonts } = useFontCache()
@@ -406,6 +406,7 @@ const FontExplorer: React.FC = () => {
                 <div
                   key={`${font.family}-${refreshCount}`}
                   ref={rowVirtualizer.measureElement} // <-- attach measurement here
+                  data-index={virtualRow.index} // <-- ADD THIS LINE
                   style={{
                     position: 'absolute',
                     top: 0,
