@@ -255,7 +255,7 @@ const FontExplorer: React.FC = () => {
               value={previewSettings.text}
               onChange={(e) => setPreviewSettings((prev) => ({ ...prev, text: e.target.value }))}
               placeholder="Enter preview text..."
-              className="w-full min-h-[60px] resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
+              className="w-full min-h-15 resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
             />
           </div>
 

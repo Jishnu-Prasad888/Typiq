@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { Download, Trash2, Save, Info, Moon, Sun } from 'lucide-react'
+import { Download, Trash2, Save, Info } from 'lucide-react'
 
 interface SettingsProps {
   darkMode: boolean
@@ -156,18 +156,12 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
     }
   }
 
-  const toggleDarkMode = () => {
-    const newDarkMode = !settings.darkMode
-    setSettings((prev) => ({ ...prev, darkMode: newDarkMode }))
-    setDarkMode(newDarkMode)
-  }
-
   return (
-    <div className="h-full overflow-auto bg-gradient-to-br from-bg-primary to-bg-secondary">
+    <div className="h-full overflow-auto bg-linear-to-br from-bg-primary to-bg-secondary">
       <div className="max-w-5xl mx-auto p-8">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl pb-4 font-bold text-text-primary mb-3 bg-gradient-to-r from-accent-orange to-accent-gold bg-clip-text text-transparent">
+          <h1 className="text-4xl pb-4 font-bold text-transperent mb-3 bg-linear-to-r from-accent-orange to-accent-gold bg-clip-text text-transparent">
             Settings
           </h1>
           <p className="text-text-secondary text-lg">Customize your Typiq experience</p>
@@ -178,7 +172,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
           <div className="card p-7 hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-accent-blue/20">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-text-primary flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-orange to-accent-gold flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-accent-orange to-accent-gold flex items-center justify-center text-white text-sm font-bold">
                   Aa
                 </div>
                 Preview Settings
@@ -197,7 +191,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
                     setSettings((prev) => ({ ...prev, previewText: e.target.value }))
                   }
                   placeholder="Enter your default preview text..."
-                  className="w-full min-h-[100px] resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
+                  className="w-full min-h-25 resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
                 />
               </div>
 
@@ -244,7 +238,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
                     }
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-border-subtle peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-orange rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-orange"></div>
+                  <div className="w-11 h-6 bg-border-subtle peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-orange rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-orange"></div>
                 </label>
               </div>
             </div>
@@ -254,7 +248,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
           <div className="card p-7 hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-accent-green/20">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-text-primary flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-green to-accent-blue flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-accent-green to-accent-blue flex items-center justify-center">
                   <Download className="w-4 h-4 text-white" />
                 </div>
                 Data Management
@@ -294,7 +288,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
                   <button
                     onClick={saveSettings}
                     disabled={isSaving}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-accent-orange to-accent-gold text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-6 py-3 rounded-xl bg-linear-to-r from-accent-orange to-accent-gold text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Save className="w-5 h-5" />
                     <span>{isSaving ? 'Saving...' : 'Save All Settings'}</span>
@@ -313,10 +307,10 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
           </div>
 
           {/* About */}
-          <div className="card p-7 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-bg-secondary to-bg-tertiary border-2 border-transparent hover:border-accent-purple/20">
+          <div className="card p-7 hover:shadow-xl transition-all duration-300 bg-linear-to-br from-bg-secondary to-bg-tertiary border-2 border-transparent hover:border-accent-purple/20">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-text-primary flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-blue flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-accent-purple to-accent-blue flex items-center justify-center">
                   <Info className="w-4 h-4 text-white" />
                 </div>
                 About Typiq
@@ -325,7 +319,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, setDarkMode }) => {
 
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-orange via-accent-gold to-accent-red flex items-center justify-center shadow-lg flex-shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-accent-orange via-accent-gold to-accent-red flex items-center justify-center shadow-lg shrink-0">
                   <span className="text-2xl font-bold text-white">T</span>
                 </div>
                 <div className="flex-1">

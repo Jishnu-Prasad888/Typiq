@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { SearchIcon, TagIcon, EditIcon, TrashIcon } from './Icons'
 
@@ -15,7 +15,7 @@ const Bookmarks: React.FC = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [filteredBookmarks, setFilteredBookmarks] = useState<Bookmark[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedCategory] = useState<string>('all')
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
 
@@ -48,8 +48,6 @@ const Bookmarks: React.FC = () => {
     setBookmarks(saved)
     setFilteredBookmarks(saved)
   }
-
-  const categories = Array.from(new Set(['all', ...bookmarks.map((b) => b.category)]))
 
   const handleDeleteBookmark = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this bookmark?')) {
@@ -133,7 +131,7 @@ const Bookmarks: React.FC = () => {
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
-                className="input min-h-[100px] resize-none"
+                className="input min-h-25 resize-none"
                 placeholder="Add notes about this font..."
               />
             </div>
@@ -238,7 +236,7 @@ const Bookmarks: React.FC = () => {
                 {/* Font Preview */}
                 <div className="mb-4">
                   <div
-                    className="min-h-[60px] p-3 rounded-lg bg-bg-tertiary"
+                    className="min-h-15 p-3 rounded-lg bg-bg-tertiary"
                     style={{
                       fontFamily: `'${bookmark.fontFamily}'`,
                       fontSize: '20px'

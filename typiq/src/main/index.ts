@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { store, StoreSchema } from './store.js'
+import { join } from 'path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -30,7 +31,7 @@ const createWindow = () => {
     mainWindow.loadURL('http://localhost:5173')
     mainWindow.webContents.openDevTools({ mode: 'detach' })
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'))
+    mainWindow.loadFile(join(app.getAppPath(), 'out/renderer/index.html'))
   }
 
   mainWindow.once('ready-to-show', () => {

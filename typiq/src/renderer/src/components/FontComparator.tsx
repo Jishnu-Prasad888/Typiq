@@ -158,7 +158,7 @@ const FontComparator: React.FC = () => {
     <div className="h-full flex bg-bg-primary">
       {/* Left Panel - Font Selection */}
       <div className="w-80 border-r border-border-primary bg-bg-secondary flex flex-col shadow-lg">
-        <div className="p-6 border-b border-border-primary bg-gradient-to-b from-bg-secondary to-bg-tertiary">
+        <div className="p-6 border-b border-border-primary bg-linear-to-b from-bg-secondary to-bg-tertiary">
           <h2 className="text-xl font-bold text-text-primary mb-4">Font Library</h2>
           <div className="relative mb-3">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
@@ -261,13 +261,13 @@ const FontComparator: React.FC = () => {
           <textarea
             value={previewText}
             onChange={(e) => setPreviewText(e.target.value)}
-            className="w-full min-h-[80px] resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
+            className="w-full min-h-20 resize-none px-4 py-3 rounded-xl border border-border-subtle bg-bg-secondary text-text-primary placeholder-text-muted shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-brown focus:border-accent-brown transition-all duration-200"
             placeholder="Enter text to compare..."
           />
         </div>
 
         {/* Comparison Grid */}
-        <div className="flex-1 p-6 overflow-auto bg-gradient-to-br from-bg-primary to-bg-secondary">
+        <div className="flex-1 p-6 overflow-auto bg-linear-to-br from-bg-primary to-bg-secondary">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {comparisonFonts.map((cf, index) => (
               <div
@@ -321,7 +321,7 @@ const FontComparator: React.FC = () => {
 
                 <div className="mb-4">
                   <div
-                    className="min-h-[140px] p-4 rounded-xl bg-bg-tertiary shadow-inner overflow-hidden"
+                    className="min-h-35 p-4 rounded-xl bg-bg-tertiary shadow-inner overflow-hidden"
                     style={{
                       fontFamily: cf.font ? `'${cf.font.family}'` : 'inherit',
                       fontSize: `${cf.settings.fontSize}px`,
@@ -340,10 +340,10 @@ const FontComparator: React.FC = () => {
                 <div className="text-center">
                   <button
                     onClick={() => openFontSelector(cf.id)}
-                    className="w-full text-sm font-medium text-text-primary mb-2 truncate px-4 py-2.5 rounded-xl bg-gradient-to-r from-bg-tertiary to-bg-hover hover:from-bg-hover hover:to-bg-tertiary transition-all duration-200 flex items-center justify-center shadow-sm"
+                    className="w-full text-sm font-medium text-text-primary mb-2 truncate px-4 py-2.5 rounded-xl bg-linear-to-r from-bg-tertiary to-bg-hover hover:from-bg-hover hover:to-bg-tertiary transition-all duration-200 flex items-center justify-center shadow-sm"
                   >
                     <span className="truncate">{cf.font?.family || 'Select font'}</span>
-                    <ChevronDownIcon className="w-4 h-4 ml-2 flex-shrink-0" />
+                    <ChevronDownIcon className="w-4 h-4 ml-2 shrink-0" />
                   </button>
                   <div className="text-xs text-text-secondary">
                     {cf.font?.styles?.length || 0} styles available
@@ -357,7 +357,7 @@ const FontComparator: React.FC = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-text-primary">Suggested Pairings</h3>
-              <div className="h-px flex-1 bg-gradient-to-r from-border-primary to-transparent ml-4"></div>
+              <div className="h-px flex-1 bg-linear-to-r from-border-primary to-transparent ml-4"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {comparisonFonts.slice(0, 2).map((headingFont, index) => {
@@ -378,7 +378,7 @@ const FontComparator: React.FC = () => {
                       </div>
                       <button
                         onClick={() => savePair(headingFont, bodyFont)}
-                        className="flex-shrink-0 ml-3 px-4 py-2 rounded-lg border border-border-subtle bg-bg-tertiary text-text-primary font-medium hover:bg-bg-hover transition-all duration-200 flex items-center space-x-2 shadow-sm"
+                        className="shrink-0 ml-3 px-4 py-2 rounded-lg border border-border-subtle bg-bg-tertiary text-text-primary font-medium hover:bg-bg-hover transition-all duration-200 flex items-center space-x-2 shadow-sm"
                       >
                         <SaveIcon className="w-4 h-4" />
                         <span>Save</span>
@@ -386,7 +386,7 @@ const FontComparator: React.FC = () => {
                     </div>
                     <div className="space-y-4">
                       <div
-                        className="p-4 rounded-xl bg-gradient-to-br from-bg-tertiary to-bg-hover shadow-sm overflow-hidden"
+                        className="p-4 rounded-xl bg-linear-to-br from-bg-tertiary to-bg-hover shadow-sm overflow-hidden"
                         style={{
                           fontFamily: `'${headingFont.font.family}'`,
                           fontSize: '28px',
@@ -422,7 +422,7 @@ const FontComparator: React.FC = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-text-primary">Saved Pairs</h3>
-              <div className="h-px flex-1 bg-gradient-to-r from-border-primary to-transparent ml-4"></div>
+              <div className="h-px flex-1 bg-linear-to-r from-border-primary to-transparent ml-4"></div>
             </div>
             {savedPairs.length === 0 ? (
               <div className="text-center py-12 rounded-xl bg-bg-secondary border-2 border-dashed border-border-subtle">
@@ -453,7 +453,7 @@ const FontComparator: React.FC = () => {
                           setSavedPairs((prev) => prev.filter((p) => p.id !== pair.id))
                           toast.success('Pair removed')
                         }}
-                        className="text-accent-red hover:bg-accent-red/10 px-2 py-1 rounded text-sm font-medium transition-all duration-200 flex-shrink-0 ml-2"
+                        className="text-accent-red hover:bg-accent-red/10 px-2 py-1 rounded text-sm font-medium transition-all duration-200 shrink-0 ml-2"
                       >
                         Remove
                       </button>
