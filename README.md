@@ -24,12 +24,12 @@ Typiq is a **desktop font exploration and management application** that gives yo
 
 ## Images
 
-![[./images/Screenshot_1.png]]
-![[./images/Screenshot_2.png]]
-![[./images/Screenshot_3.png]]
-![[./images/Screenshot_4.png]]
-![[./images/Screenshot_5.png]]
-![[./images/Screenshot_6.png]]
+![Screenshot 1](./images/Screenshot_1.png)
+![Screenshot 2](./images/Screenshot_2.png)
+![Screenshot 3](./images/Screenshot_3.png)
+![Screenshot 4](./images/Screenshot_4.png)
+![Screenshot 5](./images/Screenshot_5.png)
+![Screenshot 6](./images/Screenshot_6.png)
 
 ## Key Features
 
